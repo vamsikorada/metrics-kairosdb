@@ -58,15 +58,19 @@ public class TaggedMetrics {
     }
 
     public Meter meter( Class clazz, String name0, Tag... tags ) {
-        return metricRegistry.meter( name( clazz, name0, tags ) );
+        return meter( name( clazz, name0, tags ) );
     }
 
     public Meter meter( Class clazz, String name0, String name1, Tag... tags ) {
-        return metricRegistry.meter( name( clazz, name0, name1, tags ) );
+        return meter( name( clazz, name0, name1, tags ) );
     }
 
     public Meter meter( Class clazz, String name0, String name1, String name2, Tag... tags ) {
-        return metricRegistry.meter( name( clazz, name0, name1, name2, tags ) );
+        return meter( name( clazz, name0, name1, name2, tags ) );
+    }
+
+    public Meter meter( String name ) {
+        return metricRegistry.meter( name );
     }
 
     protected String createMetricWithTags( String namePart, String tagPart ) {

@@ -64,5 +64,10 @@ If you're only using a few tags you're not going to have this issue.
 Some potential solutions include placing a timestamp on a metric every time it's
 updated and then evicting metrics that become stale.
 
-Either that or having rolling metric registries that get thrown away
-periodically.
+Either that or having rolling metric registries that get thrown away periodically.
+
+Using a decorator pattern WILL NOT work and seems like a dead end.  All of the
+MetricRegistry internals are exposed as immutable maps or copies of maps.  This
+is probably the best strategy and certainly cleaner code.
+
+If I can just add a lastUpdated method on the metrics this will solve the problem.
