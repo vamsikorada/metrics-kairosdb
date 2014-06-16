@@ -111,7 +111,7 @@ public class TaggedMetrics {
 
             if ( ! tag.isValid() ) {
 
-                String message = "Invalid tag:" + tag.toString();
+                String message = "Invalid tag: " + tag.toString();
 
                 handleInvalidTagPolicy( invalidTagPolicy, message );
 

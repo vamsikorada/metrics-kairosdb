@@ -1,10 +1,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>net.vandenberge</groupId>
-  <artifactId>metrics-kairosdb</artifactId>
-  <version>0.0.2-burtonator</version>
-  <name>KairosDB reporter plugin for the Metrics library</name>
-  
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.vandenberge</groupId>
+    <artifactId>metrics-kairosdb</artifactId>
+    <version>0.0.2-burtonator</version>
+    <name>KairosDB reporter plugin for the Metrics library</name>
+    <description>KairosDB reporter plugin for the Metrics library</description>
+    <url>https://github.com/burtonator/metrics-kairosdb</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/burtonator/metrics-kairosdb</url>
+        <connection>https://github.com/burtonator/metrics-kairosdb</connection>
+    </scm>
+
   	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
