@@ -46,3 +46,23 @@ invalid tag, or mangling it (forcing it valid).
 Existing metrics should still work.  If you're using a regular MetricRegistry
 you can still use this implementation, you just won't be able to place tags on
 metrics.
+
+Next Steps
+==========
+
+The big issue I have to work on next is how to handle automatically garbage
+collecting metrics that aren't broadcast very often.  Right now, if you're
+creating lots of metrics with tags, these are going to stay around in the
+MetricRegistry for a long time and never garbage collected.
+
+In a long running JVM this will be a memory leak and the JVM will eventually run
+out of memory and crash.  This ONLY happens if you're creating millions of
+metrics with lots of unique tags.
+
+If you're only using a few tags you're not going to have this issue.
+
+Some potential solutions include placing a timestamp on a metric every time it's
+updated and then evicting metrics that become stale.
+
+Either that or having rolling metric registries that get thrown away
+periodically.
