@@ -1,7 +1,5 @@
 package net.vandenberge.metrics.kairosdb;
 
-import net.vandenberge.metrics.kairosdb.KairosDbReporter;
-
 import org.junit.Assert;
 import org.junit.Test;
 

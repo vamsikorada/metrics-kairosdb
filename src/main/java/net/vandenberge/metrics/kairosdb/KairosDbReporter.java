@@ -22,6 +22,8 @@ import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Snapshot;
 import com.codahale.metrics.Timer;
 
+import static net.vandenberge.metrics.kairosdb.TaggedMetrics.parse;
+
 /**
  * A reporter which publishes metric values to a KairosDB server.
  * 
@@ -150,7 +152,7 @@ public class KairosDbReporter extends ScheduledReporter {
 
 		/**
 		 * Builds a {@link KairosDbReporter} with the given properties, sending
-		 * metrics using the given {@link Graphite} client.
+		 * metrics using the given {@link KairosDb} client.
 		 * 
 		 * @param kairosDb
 		 *            a {@link KairosDb} client
@@ -176,8 +178,13 @@ public class KairosDbReporter extends ScheduledReporter {
 		}
 	}
 
-	private KairosDbReporter(MetricRegistry registry, KairosDb kairosDb, Clock clock, String prefix, TimeUnit rateUnit,
-			TimeUnit durationUnit, MetricFilter filter) {
+	private KairosDbReporter(MetricRegistry registry,
+                             KairosDb kairosDb,
+                             Clock clock,
+                             String prefix,
+                             TimeUnit rateUnit,
+			                 TimeUnit durationUnit,
+                             MetricFilter filter) {
 		super(registry, "kairosdb-reporter", filter, rateUnit, durationUnit);
 		this.client = kairosDb;
 		this.clock = clock;
@@ -211,6 +218,7 @@ public class KairosDbReporter extends ScheduledReporter {
 			for (Map.Entry<String, Timer> entry : timers.entrySet()) {
 				reportTimer(entry.getKey(), entry.getValue(), timestamp);
 			}
+
 		} catch (IOException e) {
 			LOGGER.warn("Unable to report to server", client, e);
 		} finally {
@@ -222,54 +230,79 @@ public class KairosDbReporter extends ScheduledReporter {
 		}
 	}
 
-	private void reportTimer(String name, Timer timer, long timestamp) throws IOException {
+    private void reportTimer(String name, Timer timer, long timestamp) throws IOException {
+        TaggedMetric taggedMetric = parse( name );
+        reportTimer( taggedMetric.getName(), timer, timestamp, taggedMetric.getTags() );
+    }
+
+    private void reportTimer(String name, Timer timer, long timestamp, Map<String,String> tags) throws IOException {
 		final Snapshot snapshot = timer.getSnapshot();
 
-		client.send(prefix(name, "max"), format(convertDuration(snapshot.getMax())), timestamp);
-		client.send(prefix(name, "mean"), format(convertDuration(snapshot.getMean())), timestamp);
-		client.send(prefix(name, "min"), format(convertDuration(snapshot.getMin())), timestamp);
-		client.send(prefix(name, "stddev"), format(convertDuration(snapshot.getStdDev())), timestamp);
-		client.send(prefix(name, "p50"), format(convertDuration(snapshot.getMedian())), timestamp);
-		client.send(prefix(name, "p75"), format(convertDuration(snapshot.get75thPercentile())), timestamp);
-		client.send(prefix(name, "p95"), format(convertDuration(snapshot.get95thPercentile())), timestamp);
-		client.send(prefix(name, "p98"), format(convertDuration(snapshot.get98thPercentile())), timestamp);
-		client.send(prefix(name, "p99"), format(convertDuration(snapshot.get99thPercentile())), timestamp);
-		client.send(prefix(name, "p999"), format(convertDuration(snapshot.get999thPercentile())), timestamp);
+		client.send(prefix(name, "max"), format(convertDuration(snapshot.getMax())), timestamp, tags);
+		client.send(prefix(name, "mean"), format(convertDuration(snapshot.getMean())), timestamp, tags);
+		client.send(prefix(name, "min"), format(convertDuration(snapshot.getMin())), timestamp, tags);
+		client.send(prefix(name, "stddev"), format(convertDuration(snapshot.getStdDev())), timestamp, tags);
+		client.send(prefix(name, "p50"), format(convertDuration(snapshot.getMedian())), timestamp, tags);
+		client.send(prefix(name, "p75"), format(convertDuration(snapshot.get75thPercentile())), timestamp, tags);
+		client.send(prefix(name, "p95"), format(convertDuration(snapshot.get95thPercentile())), timestamp, tags);
+		client.send(prefix(name, "p98"), format(convertDuration(snapshot.get98thPercentile())), timestamp, tags);
+		client.send(prefix(name, "p99"), format(convertDuration(snapshot.get99thPercentile())), timestamp, tags);
+		client.send(prefix(name, "p999"), format(convertDuration(snapshot.get999thPercentile())), timestamp, tags);
 
-		reportMetered(name, timer, timestamp);
+		reportMetered(name, timer, timestamp, tags);
 	}
 
-	private void reportMetered(String name, Metered meter, long timestamp) throws IOException {
-		client.send(prefix(name, "count"), format(meter.getCount()), timestamp);
-		client.send(prefix(name, "m1_rate"), format(convertRate(meter.getOneMinuteRate())), timestamp);
-		client.send(prefix(name, "m5_rate"), format(convertRate(meter.getFiveMinuteRate())), timestamp);
-		client.send(prefix(name, "m15_rate"), format(convertRate(meter.getFifteenMinuteRate())), timestamp);
-		client.send(prefix(name, "mean_rate"), format(convertRate(meter.getMeanRate())), timestamp);
+    private void reportMetered(String name, Metered meter, long timestamp) throws IOException {
+        TaggedMetric taggedMetric = parse( name );
+        reportMetered( taggedMetric.getName(), meter, timestamp, taggedMetric.getTags() );
+    }
+
+	private void reportMetered(String name, Metered meter, long timestamp, Map<String,String> tags) throws IOException {
+		client.send(prefix(name, "count"), format(meter.getCount()), timestamp, tags);
+		client.send(prefix(name, "m1_rate"), format(convertRate(meter.getOneMinuteRate())), timestamp, tags);
+		client.send(prefix(name, "m5_rate"), format(convertRate(meter.getFiveMinuteRate())), timestamp, tags);
+		client.send(prefix(name, "m15_rate"), format(convertRate(meter.getFifteenMinuteRate())), timestamp, tags);
+		client.send(prefix(name, "mean_rate"), format(convertRate(meter.getMeanRate())), timestamp, tags);
 	}
 
-	private void reportHistogram(String name, Histogram histogram, long timestamp) throws IOException {
+    private void reportHistogram(String name, Histogram histogram, long timestamp) throws IOException {
+        TaggedMetric taggedMetric = parse( name );
+        reportHistogram( taggedMetric.getName(), histogram, timestamp, taggedMetric.getTags() );
+    }
+
+	private void reportHistogram(String name, Histogram histogram, long timestamp, Map<String,String> tags) throws IOException {
 		final Snapshot snapshot = histogram.getSnapshot();
-		client.send(prefix(name, "count"), format(histogram.getCount()), timestamp);
-		client.send(prefix(name, "max"), format(snapshot.getMax()), timestamp);
-		client.send(prefix(name, "mean"), format(snapshot.getMean()), timestamp);
-		client.send(prefix(name, "min"), format(snapshot.getMin()), timestamp);
-		client.send(prefix(name, "stddev"), format(snapshot.getStdDev()), timestamp);
-		client.send(prefix(name, "p50"), format(snapshot.getMedian()), timestamp);
-		client.send(prefix(name, "p75"), format(snapshot.get75thPercentile()), timestamp);
-		client.send(prefix(name, "p95"), format(snapshot.get95thPercentile()), timestamp);
-		client.send(prefix(name, "p98"), format(snapshot.get98thPercentile()), timestamp);
-		client.send(prefix(name, "p99"), format(snapshot.get99thPercentile()), timestamp);
-		client.send(prefix(name, "p999"), format(snapshot.get999thPercentile()), timestamp);
+		client.send(prefix(name, "count"), format(histogram.getCount()), timestamp, tags);
+		client.send(prefix(name, "max"), format(snapshot.getMax()), timestamp, tags);
+		client.send(prefix(name, "mean"), format(snapshot.getMean()), timestamp, tags);
+		client.send(prefix(name, "min"), format(snapshot.getMin()), timestamp, tags);
+		client.send(prefix(name, "stddev"), format(snapshot.getStdDev()), timestamp, tags);
+		client.send(prefix(name, "p50"), format(snapshot.getMedian()), timestamp, tags);
+		client.send(prefix(name, "p75"), format(snapshot.get75thPercentile()), timestamp, tags);
+		client.send(prefix(name, "p95"), format(snapshot.get95thPercentile()), timestamp, tags);
+		client.send(prefix(name, "p98"), format(snapshot.get98thPercentile()), timestamp, tags);
+		client.send(prefix(name, "p99"), format(snapshot.get99thPercentile()), timestamp, tags);
+		client.send(prefix(name, "p999"), format(snapshot.get999thPercentile()), timestamp, tags);
 	}
 
-	private void reportCounter(String name, Counter counter, long timestamp) throws IOException {
-		client.send(prefix(name, "count"), format(counter.getCount()), timestamp);
+    private void reportCounter(String name, Counter counter, long timestamp) throws IOException {
+        TaggedMetric taggedMetric = parse( name );
+        reportCounter( taggedMetric.getName(), counter, timestamp, taggedMetric.getTags() );
+    }
+
+	private void reportCounter(String name, Counter counter, long timestamp, Map<String,String> tags) throws IOException {
+		client.send(prefix(name, "count"), format(counter.getCount()), timestamp, tags);
 	}
 
-	private void reportGauge(String name, Gauge<?> gauge, long timestamp) throws IOException {
+    private void reportGauge(String name, Gauge<?> gauge, long timestamp) throws IOException {
+        TaggedMetric taggedMetric = parse( name );
+        reportGauge( taggedMetric.getName(), gauge, timestamp, taggedMetric.getTags() );
+    }
+
+    private void reportGauge(String name, Gauge<?> gauge, long timestamp, Map<String,String> tags) throws IOException {
 		final String value = format(gauge.getValue());
 		if (value != null) {
-			client.send(prefix(name), value, timestamp);
+			client.send(prefix(name), value, timestamp, tags);
 		}
 	}
 

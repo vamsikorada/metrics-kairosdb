@@ -99,10 +99,13 @@ public class KairosDb implements Closeable {
 	 *            the value of the metric
 	 * @param timestamp
 	 *            the timestamp of the metric
+     * @aram tags
+     *            a map from name to value for tags to include as part of this metric.
+     *
 	 * @throws IOException
 	 *             if there was an error sending the metric
 	 */
-	public void send(String name, String value, long timestamp) throws IOException {
+	public void send(String name, String value, long timestamp, Map<String, String> tags ) throws IOException {
 		Writer writer = getWriter();
 		writer.write("put ");
 		writer.write(sanitize(name));
@@ -110,7 +113,13 @@ public class KairosDb implements Closeable {
 		writer.write(Long.toString(timestamp));
 		writer.write(' ');
 		writer.write(sanitize(value));
-		for (Entry<String, String> entry : this.tags.entrySet()) {
+
+        Map<String,String> mergedTags = new LinkedHashMap<>( this.tags.size() + tags.size() );
+
+        mergedTags.putAll( this.tags );
+        mergedTags.putAll( tags );
+
+		for (Entry<String, String> entry : mergedTags.entrySet()) {
 			writer.write(' ');
 			writer.write(entry.getKey());
 			writer.write('=');

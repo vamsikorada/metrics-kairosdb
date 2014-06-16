@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.vandenberge</groupId>
   <artifactId>metrics-kairosdb</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-burtonator</version>
   <name>KairosDB reporter plugin for the Metrics library</name>
   
   	<dependencies>
@@ -30,4 +30,21 @@
 			<version>3.0.2</version>
 		</dependency>
 	</dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
 </project>
