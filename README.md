@@ -35,10 +35,14 @@ The API is simple to use.
                                                      InvalidTagPolicy.FAIL,
                                                      DuplicateTagPolicy.FAIL );
 
-    Meter requests = taggedMetrics.meter( Http.class, "requests", tag( "foo", "bar" ) );
+    Meter requests = taggedMetrics.meter( Http.class, "requests", tag( "domain", "msnbc.com" ) );
 
 One significant issue is how to handle duplicate or invalid tags.
 
 KairosDB (for now) doesn't support unicode tags.  You can set the policy how these
 are handled including failing and throwing a runtime exception, ignoring the
 invalid tag, or mangling it (forcing it valid).
+
+Existing metrics should still work.  If you're using a regular MetricRegistry
+you can still use this implementation, you just won't be able to place tags on
+metrics.
