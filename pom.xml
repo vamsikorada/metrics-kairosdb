@@ -20,7 +20,11 @@
         <connection>https://github.com/burtonator/metrics-kairosdb</connection>
     </scm>
 
-  	<dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
