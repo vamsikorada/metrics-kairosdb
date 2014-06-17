@@ -93,7 +93,9 @@ public class Tag {
 
     protected static boolean isValid( char c ) {
 
-        //  alphanumeric characters, slash, dash and underscore
+        // Metric names, tag names and values are case sensitive and can only
+        // contain the following characters: alphanumeric characters, period ".",
+        // slash "/", dash "-", and underscore "_".
 
         if ( c >= 'a' && c <= 'z' )
             return true;
@@ -105,6 +107,8 @@ public class Tag {
             return true;
 
         switch( c ) {
+            case '.':
+                return true;
             case '/':
                 return true;
             case '-':

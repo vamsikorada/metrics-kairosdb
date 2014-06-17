@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.vandenberge</groupId>
     <artifactId>metrics-kairosdb</artifactId>
-    <version>0.0.2-burtonator</version>
+    <version>0.0.3-burtonator</version>
     <name>KairosDB reporter plugin for the Metrics library</name>
     <description>KairosDB reporter plugin for the Metrics library</description>
     <url>https://github.com/burtonator/metrics-kairosdb</url>
