@@ -189,8 +189,9 @@ public class TaggedMetricsTest {
     @Test
     public void testInvalid5() throws Exception {
 
+        assertTrue( Tag.isValid( "." ) );
+
         assertFalse( Tag.isValid( "?" ) );
-        assertFalse( Tag.isValid( "." ) );
         assertFalse( Tag.isValid( "=" ) );
         assertFalse( Tag.isValid( "&" ) );
         assertFalse( Tag.isValid( ":" ) );
