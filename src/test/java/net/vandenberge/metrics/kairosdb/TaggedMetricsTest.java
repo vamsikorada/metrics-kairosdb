@@ -164,7 +164,7 @@ public class TaggedMetricsTest {
                                                          InvalidTagPolicy.FAIL,
                                                          DuplicateTagPolicy.FAIL );
 
-        String invalidTagCharacters = "?.=&: \r\n\t";
+        String invalidTagCharacters = "?=&: \r\n\t";
 
         for (int i = 0; i < invalidTagCharacters.length(); i++) {
 
