@@ -121,7 +121,19 @@ public class TaggedMetrics {
         return metricRegistry.timer( name );
     }
 
-    public void register( String name, Gauge gauge ) {
+    public void register( Gauge gauge, Class clazz, String name0, Tag... tags ) {
+        register( gauge, name( clazz, name0, tags ) );
+    }
+
+    public void register( Gauge gauge, Class clazz, String name0, String name1, Tag... tags ) {
+        register( gauge, name( clazz, name0, name1, tags ) );
+    }
+
+    public void register( Gauge gauge, Class clazz, String name0, String name1, String name2, Tag... tags ) {
+        register( gauge, name( clazz, name0, name1, name2, tags ) );
+    }
+
+    public void register( Gauge gauge, String name ) {
         metricRegistry.register(name, gauge );
     }
 
