@@ -1,7 +1,7 @@
 package net.vandenberge.metrics.kairosdb;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.*;
+import com.codahale.metrics.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +71,58 @@ public class TaggedMetrics {
 
     public Meter meter( String name ) {
         return metricRegistry.meter( name );
+    }
+
+    public Counter counter( Class clazz, String name0, Tag... tags ) {
+        return counter( name( clazz, name0, tags ) );
+    }
+
+    public Counter counter( Class clazz, String name0, String name1, Tag... tags ) {
+        return counter( name( clazz, name0, name1, tags ) );
+    }
+
+    public Counter counter( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+        return counter( name( clazz, name0, name1, name2, tags ) );
+    }
+
+    public Counter counter( String name ) {
+        return metricRegistry.counter( name );
+    }
+
+    public Histogram histogram( Class clazz, String name0, Tag... tags ) {
+        return histogram( name( clazz, name0, tags ) );
+    }
+
+    public Histogram histogram( Class clazz, String name0, String name1, Tag... tags ) {
+        return histogram( name( clazz, name0, name1, tags ) );
+    }
+
+    public Histogram histogram( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+        return histogram( name( clazz, name0, name1, name2, tags ) );
+    }
+
+    public Histogram histogram( String name ) {
+        return metricRegistry.histogram( name );
+    }
+
+    public Timer timer( Class clazz, String name0, Tag... tags ) {
+        return timer( name( clazz, name0, tags ) );
+    }
+
+    public Timer timer( Class clazz, String name0, String name1, Tag... tags ) {
+        return timer( name( clazz, name0, name1, tags ) );
+    }
+
+    public Timer timer( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+        return timer( name( clazz, name0, name1, name2, tags ) );
+    }
+
+    public Timer timer( String name ) {
+        return metricRegistry.timer( name );
+    }
+
+    public void register( String name, Gauge gauge ) {
+        metricRegistry.register(name, gauge );
     }
 
     protected String createMetricWithTags( String namePart, String tagPart ) {
