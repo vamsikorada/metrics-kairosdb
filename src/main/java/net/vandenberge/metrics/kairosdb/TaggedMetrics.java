@@ -121,6 +121,10 @@ public class TaggedMetrics {
         return metricRegistry.timer( name );
     }
 
+    public TimerRunner timer( Runnable runnable ) {
+        return new TimerRunner( this, runnable );
+    }
+
     public void register( Gauge gauge, Class clazz, String name0, Tag... tags ) {
         register( gauge, name( clazz, name0, tags ) );
     }
