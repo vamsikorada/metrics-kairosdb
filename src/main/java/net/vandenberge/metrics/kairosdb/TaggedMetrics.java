@@ -137,6 +137,21 @@ public class TaggedMetrics {
         metricRegistry.register(name, gauge );
     }
 
+    public void registerAll( MetricSet metricSet ) {
+        metricRegistry.registerAll( metricSet );
+    }
+
+    public void registerAll( String prefix, MetricSet metricSet ) {
+
+        if ( ! prefix.endsWith( "." ) )
+            prefix = prefix + ".";
+
+        for( String key : metricSet.getMetrics().keySet() ) {
+            metricRegistry.register( prefix + key, metricSet.getMetrics().get( key ) );
+        }
+
+    }
+
     protected String createMetricWithTags( String namePart, String tagPart ) {
 
         if ( tagPart == null || "".equals( tagPart ) ) {
