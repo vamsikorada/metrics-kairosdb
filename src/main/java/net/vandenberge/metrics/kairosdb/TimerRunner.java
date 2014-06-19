@@ -28,16 +28,6 @@ public class TimerRunner implements Runnable {
         return this;
     }
 
-    public TimerRunner withTag( Tag tag0, Tag tag1 ) {
-        timer = taggedMetrics.timer( delegate.getClass(), "run", tag0, tag1 );
-        return this;
-    }
-
-    public TimerRunner withTag( Tag tag0, Tag tag1, Tag tag2 ) {
-        timer = taggedMetrics.timer( delegate.getClass(), "run", tag0, tag1, tag2 );
-        return this;
-    }
-
     @Override
     public void run() {
 
