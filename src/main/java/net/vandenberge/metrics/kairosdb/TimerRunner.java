@@ -31,6 +31,7 @@ public class TimerRunner implements Runnable {
     @Override
     public void run() {
 
+        // TODO: this will log failure too... that's not what we want!
         try(Timer.Context context = timer.time() ) {
             delegate.run();
         }

@@ -1,26 +1,16 @@
 package net.vandenberge.metrics.kairosdb;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import com.codahale.metrics.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.Clock;
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.Metered;
-import com.codahale.metrics.MetricFilter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.ScheduledReporter;
-import com.codahale.metrics.Snapshot;
-import com.codahale.metrics.Timer;
 
 import static net.vandenberge.metrics.kairosdb.TaggedMetrics.parse;
 
@@ -35,9 +25,15 @@ public class KairosDbReporter extends ScheduledReporter {
 	private static final Pattern TAG_PATTERN = Pattern.compile("[\\p{Alnum}\\.\\-_/]+");
 	private static final Logger LOGGER = LoggerFactory.getLogger(KairosDbReporter.class);
 
+    private final MetricRegistry registry;
+
 	private final KairosDb client;
 	private final Clock clock;
 	private final String prefix;
+
+    private boolean garbageCollectAndDeriveTimers = false;
+
+    protected GCMetricIndex gcMetricIndex = null;
 
 	/**
 	 * Returns a new {@link Builder} for {@link KairosDbReporter}.
@@ -63,6 +59,7 @@ public class KairosDbReporter extends ScheduledReporter {
 		private TimeUnit durationUnit;
 		private MetricFilter filter;
 		private Map<String, String> tags;
+        private boolean garbageCollectAndDeriveCounters = false;
 
 		private Builder(MetricRegistry registry) {
 			this.registry = registry;
@@ -73,6 +70,25 @@ public class KairosDbReporter extends ScheduledReporter {
 			this.filter = MetricFilter.ALL;
 			this.tags = new LinkedHashMap<String, String>();
 		}
+
+        /**
+         * When true, we assume that counters are actually derived every time
+         * they are reported.
+         *
+         * IE, that they track rate, and every time we broadcast them they
+         * need to be reset.
+         *
+         * We also remove them from the index if the value is zero after
+         * they've been broadcast.  This prevents memory issues which would
+         * arise from sparse metrics.
+         *
+         * @param garbageCollectAndDeriveCounters
+         * @return
+         */
+        public Builder garbageCollectAndDeriveCounters(boolean garbageCollectAndDeriveCounters) {
+            this.garbageCollectAndDeriveCounters = garbageCollectAndDeriveCounters;
+            return this;
+        }
 
 		/**
 		 * Use the given {@link Clock} instance for the time.
@@ -160,7 +176,7 @@ public class KairosDbReporter extends ScheduledReporter {
 		 */
 		public KairosDbReporter build(KairosDb kairosDb) {
 			kairosDb.setTags(tags);
-			return new KairosDbReporter(registry, kairosDb, clock, prefix, rateUnit, durationUnit, filter);
+			return new KairosDbReporter(registry, kairosDb, clock, prefix, rateUnit, durationUnit, filter, garbageCollectAndDeriveCounters );
 		}
 
 		private void validateTag(String tagName, String tagValue) {
@@ -173,7 +189,7 @@ public class KairosDbReporter extends ScheduledReporter {
 				throw new IllegalArgumentException(
 						"\""
 								+ tag
-								+ "\" is not a valid tag name or value; it can only contain alphahumeric characters, period, slash, dash and underscore!");
+								+ "\" is not a valid tag name or value; it can only contain alphanumeric characters, period, slash, dash and underscore!");
 			}
 		}
 	}
@@ -184,11 +200,15 @@ public class KairosDbReporter extends ScheduledReporter {
                              String prefix,
                              TimeUnit rateUnit,
 			                 TimeUnit durationUnit,
-                             MetricFilter filter) {
+                             MetricFilter filter,
+                             boolean garbageCollectAndDeriveTimers ) {
 		super(registry, "kairosdb-reporter", filter, rateUnit, durationUnit);
+        this.registry = registry;
 		this.client = kairosDb;
 		this.clock = clock;
 		this.prefix = prefix;
+        this.garbageCollectAndDeriveTimers = garbageCollectAndDeriveTimers;
+        this.gcMetricIndex = new GCMetricIndex( registry, clock, garbageCollectAndDeriveTimers );
 	}
 
 	@Override
@@ -197,6 +217,7 @@ public class KairosDbReporter extends ScheduledReporter {
 		final long timestamp = clock.getTime();
 
 		try {
+
 			client.connect();
 
 			for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
@@ -219,7 +240,9 @@ public class KairosDbReporter extends ScheduledReporter {
 				reportTimer(entry.getKey(), entry.getValue(), timestamp);
 			}
 
-		} catch (IOException e) {
+            gcMetricIndex.gc();
+
+        } catch (IOException e) {
 			LOGGER.warn("Unable to report to server", client, e);
 		} finally {
 			try {
@@ -229,6 +252,7 @@ public class KairosDbReporter extends ScheduledReporter {
 			}
 		}
 	}
+
 
     private void reportTimer(String name, Timer timer, long timestamp) throws IOException {
         TaggedMetric taggedMetric = parse( name );
@@ -257,13 +281,13 @@ public class KairosDbReporter extends ScheduledReporter {
         reportMetered( taggedMetric.getName(), meter, timestamp, taggedMetric.getTags() );
     }
 
-	private void reportMetered(String name, Metered meter, long timestamp, Map<String,String> tags) throws IOException {
-		client.send(prefix(name, "count"), format(meter.getCount()), timestamp, tags);
-		client.send(prefix(name, "m1_rate"), format(convertRate(meter.getOneMinuteRate())), timestamp, tags);
-		client.send(prefix(name, "m5_rate"), format(convertRate(meter.getFiveMinuteRate())), timestamp, tags);
-		client.send(prefix(name, "m15_rate"), format(convertRate(meter.getFifteenMinuteRate())), timestamp, tags);
-		client.send(prefix(name, "mean_rate"), format(convertRate(meter.getMeanRate())), timestamp, tags);
-	}
+    private void reportMetered(String name, Metered meter, long timestamp, Map<String,String> tags) throws IOException {
+        client.send(prefix(name, "count"), format(meter.getCount()), timestamp, tags);
+        client.send(prefix(name, "m1_rate"), format(convertRate(meter.getOneMinuteRate())), timestamp, tags);
+        client.send(prefix(name, "m5_rate"), format(convertRate(meter.getFiveMinuteRate())), timestamp, tags);
+        client.send(prefix(name, "m15_rate"), format(convertRate(meter.getFifteenMinuteRate())), timestamp, tags);
+        client.send(prefix(name, "mean_rate"), format(convertRate(meter.getMeanRate())), timestamp, tags);
+    }
 
     private void reportHistogram(String name, Histogram histogram, long timestamp) throws IOException {
         TaggedMetric taggedMetric = parse( name );
@@ -286,12 +310,27 @@ public class KairosDbReporter extends ScheduledReporter {
 	}
 
     private void reportCounter(String name, Counter counter, long timestamp) throws IOException {
+
+        long count = counter.getCount();
+
         TaggedMetric taggedMetric = parse( name );
-        reportCounter( taggedMetric.getName(), counter, timestamp, taggedMetric.getTags() );
+        reportCounter( taggedMetric.getName(), counter, count, timestamp, taggedMetric.getTags() );
+
+        if ( garbageCollectAndDeriveTimers ) {
+
+            if ( count > 0 ) {
+                gcMetricIndex.touch( name );
+            }
+
+            counter.dec( count );
+        }
+
     }
 
-	private void reportCounter(String name, Counter counter, long timestamp, Map<String,String> tags) throws IOException {
-		client.send(prefix(name, "count"), format(counter.getCount()), timestamp, tags);
+	private void reportCounter(String name, Counter counter, long count, long timestamp, Map<String,String> tags) throws IOException {
+
+        client.send(prefix(name, "count"), format(count), timestamp, tags);
+
 	}
 
     private void reportGauge(String name, Gauge<?> gauge, long timestamp) throws IOException {

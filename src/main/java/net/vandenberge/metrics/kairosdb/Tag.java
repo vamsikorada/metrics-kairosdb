@@ -22,6 +22,31 @@ public class Tag {
         return value;
     }
 
+    public String toString() {
+        return name + "=" + value;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!( o instanceof Tag )) return false;
+
+        Tag tag = (Tag) o;
+
+        if (!name.equals( tag.name )) return false;
+        if (!value.equals( tag.value )) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
+
     /**
      * Return true if this tag is valid.
      *
@@ -35,10 +60,6 @@ public class Tag {
 
         return isValid( name ) && isValid( value );
 
-    }
-
-    public String toString() {
-        return name + "=" + value;
     }
 
     /**
