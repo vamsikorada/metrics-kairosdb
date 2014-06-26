@@ -186,6 +186,10 @@ public class TaggedMetrics {
         return new Tag( name, value );
     }
 
+    public static Tag tag( String name, Object value ) {
+        return new Tag( name, value.toString() );
+    }
+
     protected String join( Tag... tags ) throws InvalidTagException {
 
         Map<String,Tag> tagMap = new HashMap<>();
