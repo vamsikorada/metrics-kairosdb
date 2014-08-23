@@ -210,10 +210,13 @@ public class TaggedMetricsTest {
                                                          InvalidTagPolicy.FAIL,
                                                          DuplicateTagPolicy.FAIL );
 
-        final Meter requests = taggedMetrics.meter( TaggedMetricsTest.class, "requests", tag( "foo", "bar" ) );
+        Meter requests = taggedMetrics.meter( TaggedMetricsTest.class, "requests", tag( "foo", "bar" ) );
         requests.mark();
 
-        assertEquals( 1, requests.getCount() );
+        requests = taggedMetrics.meter( TaggedMetricsTest.class, "requests", tag( "foo", "bar" ) );
+        requests.mark();
+
+        assertEquals( 2, requests.getCount() );
 
         assertEquals( 1, taggedMetrics.getMetricRegistry().getNames().size() );
 
