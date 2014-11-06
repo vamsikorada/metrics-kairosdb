@@ -68,7 +68,7 @@ public class KairosDbReporter extends ScheduledReporter {
 			this.rateUnit = TimeUnit.SECONDS;
 			this.durationUnit = TimeUnit.MILLISECONDS;
 			this.filter = MetricFilter.ALL;
-			this.tags = new LinkedHashMap<String, String>();
+			this.tags = new LinkedHashMap<>();
 		}
 
         /**
@@ -214,7 +214,8 @@ public class KairosDbReporter extends ScheduledReporter {
 	@Override
 	public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters, SortedMap<String, Histogram> histograms,
 			SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
-		final long timestamp = clock.getTime();
+
+        final long timestamp = clock.getTime();
 
 		try {
 

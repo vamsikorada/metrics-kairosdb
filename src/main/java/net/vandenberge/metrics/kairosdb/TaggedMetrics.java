@@ -192,7 +192,7 @@ public class TaggedMetrics {
 
     protected String join( Tag... tags ) throws InvalidTagException {
 
-        Map<String,Tag> tagMap = new HashMap<>();
+        Map<String,Tag> tagMap = new TreeMap<>();
 
         for (Tag tag : tags) {
 
@@ -323,7 +323,7 @@ public class TaggedMetrics {
 
         StringBuilder buff = new StringBuilder();
 
-        Map<String,String> tags = new HashMap<>();
+        Map<String,String> tags = new TreeMap<>();
 
         String name = null;
 
