@@ -1,4 +1,4 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.vandenberge.metrics.kairosdb.TaggedMetrics.tag;
+import static com.spinn3r.metrics.kairosdb.TaggedMetrics.tag;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.fest.assertions.api.Fail.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;

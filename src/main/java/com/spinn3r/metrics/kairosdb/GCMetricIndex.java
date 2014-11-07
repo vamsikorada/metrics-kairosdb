@@ -1,8 +1,7 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 import com.codahale.metrics.*;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

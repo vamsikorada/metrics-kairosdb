@@ -1,4 +1,4 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-import static net.vandenberge.metrics.kairosdb.TaggedMetrics.*;
+import static com.spinn3r.metrics.kairosdb.TaggedMetrics.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

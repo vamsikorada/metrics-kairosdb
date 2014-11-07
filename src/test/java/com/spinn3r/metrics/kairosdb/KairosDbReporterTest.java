@@ -1,4 +1,4 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 import org.junit.Assert;
 import org.junit.Test;

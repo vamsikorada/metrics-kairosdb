@@ -1,7 +1,6 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -12,7 +11,7 @@ import com.codahale.metrics.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static net.vandenberge.metrics.kairosdb.TaggedMetrics.parse;
+import static com.spinn3r.metrics.kairosdb.TaggedMetrics.parse;
 
 /**
  * A reporter which publishes metric values to a KairosDB server.

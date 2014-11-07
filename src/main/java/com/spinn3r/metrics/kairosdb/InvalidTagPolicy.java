@@ -1,4 +1,4 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 /**
  * The policy for handling invalid tags.  It's possible that someone could

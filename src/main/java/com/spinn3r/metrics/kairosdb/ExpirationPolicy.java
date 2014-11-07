@@ -1,4 +1,4 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 /**
  * Control how often we expire metrics from the VM.

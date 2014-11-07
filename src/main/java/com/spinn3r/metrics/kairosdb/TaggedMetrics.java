@@ -1,4 +1,4 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 import com.codahale.metrics.*;
 import com.codahale.metrics.Timer;

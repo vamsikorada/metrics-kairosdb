@@ -1,11 +1,11 @@
-package net.vandenberge.metrics.kairosdb;
+package com.spinn3r.metrics.kairosdb;
 
 import com.codahale.metrics.MetricRegistry;
 import junit.framework.TestCase;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static net.vandenberge.metrics.kairosdb.TaggedMetrics.tag;
+import static com.spinn3r.metrics.kairosdb.TaggedMetrics.tag;
 
 public class TimerRunnerTest extends TestCase {
 
