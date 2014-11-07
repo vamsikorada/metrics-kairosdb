@@ -244,8 +244,8 @@ public class KairosDbReporter extends ScheduledReporter {
 
             gcMetricIndex.gc();
 
-        } catch (IOException e) {
-			LOGGER.warn("Unable to report to server", client, e);
+        } catch (Throwable t) {
+			LOGGER.warn("Unable to report to server", client, t);
 		} finally {
 			try {
 				client.close();
