@@ -57,6 +57,15 @@
     </distributionManagement>
     -->
 
+    <distributionManagement>
+
+        <repository>
+            <id>ssh-repository</id>
+            <url>scp://util0017.wdc.sl.spinn3r.com/var/www/maven-repo/private</url>
+        </repository>
+
+    </distributionManagement>
+
     <dependencies>
 		<dependency>
 			<groupId>junit</groupId>
