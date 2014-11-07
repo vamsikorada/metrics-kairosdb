@@ -218,6 +218,8 @@ public class KairosDbReporter extends ScheduledReporter {
 
 		try {
 
+            LOGGER.info( "Reporting metrics to " + client );
+
 			client.connect();
 
 			for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {

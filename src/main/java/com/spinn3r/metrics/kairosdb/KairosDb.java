@@ -148,4 +148,11 @@ public class KairosDb implements Closeable {
 		}
 		return writer;
 	}
+
+    @Override
+    public String toString() {
+        return String.format( "%s:%s", address.getHostName(), address.getPort() );
+    }
+
+
 }
