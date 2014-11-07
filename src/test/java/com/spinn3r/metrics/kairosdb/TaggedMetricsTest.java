@@ -24,13 +24,13 @@ public class TaggedMetricsTest {
                                                          InvalidTagPolicy.FAIL,
                                                          DuplicateTagPolicy.FAIL );
 
-        assertEquals( "net.vandenberge.metrics.kairosdb.TaggedMetricsTest.foo",
+        assertEquals( "com.spinn3r.metrics.kairosdb.TaggedMetricsTest.foo",
                       taggedMetrics.name( TaggedMetricsTest.class, "foo" ) );
 
-        assertEquals( "net.vandenberge.metrics.kairosdb.TaggedMetricsTest.foo?cat=dog",
+        assertEquals( "com.spinn3r.metrics.kairosdb.TaggedMetricsTest.foo?cat=dog",
                       taggedMetrics.name( TaggedMetricsTest.class, "foo", tag( "cat", "dog" ) ) );
 
-        assertEquals( "net.vandenberge.metrics.kairosdb.TaggedMetricsTest.foo?lion=tiger&cat=dog",
+        assertEquals( "com.spinn3r.metrics.kairosdb.TaggedMetricsTest.foo?cat=dog&lion=tiger",
                       taggedMetrics.name( TaggedMetricsTest.class, "foo", tag( "cat", "dog" ),
                                                                           tag( "lion", "tiger" ) ) );
 
@@ -93,7 +93,7 @@ public class TaggedMetricsTest {
                                                          InvalidTagPolicy.MANGLE,
                                                          DuplicateTagPolicy.IGNORE );
 
-        assertEquals( "cat=_&foo=_&_=bar",
+        assertEquals( "_=bar&cat=_&foo=_",
                       taggedMetrics.join( tag( null, "bar" ),
                                           tag( "cat", null ),
                                           tag( "foo", "α" ) ) );
@@ -222,7 +222,7 @@ public class TaggedMetricsTest {
 
         System.out.printf( "%s", taggedMetrics.getMetricRegistry().getNames() );
 
-        assertTrue( taggedMetrics.getMetricRegistry().getNames().contains( "net.vandenberge.metrics.kairosdb.TaggedMetricsTest.requests?foo=bar" ) );
+        assertTrue( taggedMetrics.getMetricRegistry().getNames().contains( "com.spinn3r.metrics.kairosdb.TaggedMetricsTest.requests?foo=bar" ) );
 
     }
 

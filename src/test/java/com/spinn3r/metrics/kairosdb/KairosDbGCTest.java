@@ -82,7 +82,7 @@ public class KairosDbGCTest {
 
         assertTrue( out.contains( " 1 host=test-host foo=bar" ) );
 
-        assertTrue( out.contains( "put net.vandenberge.metrics.kairosdb.TaggedMetricsTest.requests.count" ) );
+        assertTrue( out.contains( "put com.spinn3r.metrics.kairosdb.TaggedMetricsTest.requests.count" ) );
 
         System.out.printf( "%s\n", metricRegistry.getMetrics().keySet() );
 
