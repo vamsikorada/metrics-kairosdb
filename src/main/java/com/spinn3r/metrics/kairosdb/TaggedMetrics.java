@@ -45,6 +45,11 @@ public class TaggedMetrics {
 
     }
 
+    public String name( String baseName, String name0, Tag... tags ) {
+        return createMetricWithTags( MetricRegistry.name( baseName, name0 ), join( tags ) );
+    }
+
+
     public String name( Class clazz, String name0, Tag... tags ) {
         return createMetricWithTags( MetricRegistry.name( clazz, name0 ), join( tags ) );
     }
@@ -83,6 +88,10 @@ public class TaggedMetrics {
 
     public Counter counter( Class clazz, String name0, String name1, String name2, Tag... tags ) {
         return counter( name( clazz, name0, name1, name2, tags ) );
+    }
+
+    public Counter counter( String baseName, String name0, Tag... tags ) {
+        return counter( name( baseName, name0, tags ) );
     }
 
     public Counter counter( String name ) {
