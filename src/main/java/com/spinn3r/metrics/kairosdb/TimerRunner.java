@@ -14,8 +14,6 @@ public class TimerRunner implements Runnable {
 
     private final Runnable delegate;
 
-    private List<Tag> tags = new ArrayList<>();
-
     private Timer timer = null;
 
     public TimerRunner(TaggedMetrics taggedMetrics, Runnable delegate) {

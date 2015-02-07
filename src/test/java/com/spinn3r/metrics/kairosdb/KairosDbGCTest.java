@@ -14,14 +14,10 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.spinn3r.metrics.kairosdb.TaggedMetrics.tag;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.*;
-
+import static com.spinn3r.metrics.kairosdb.TaggedMetrics.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public class KairosDbGCTest {
 

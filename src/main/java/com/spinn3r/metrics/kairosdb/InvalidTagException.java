@@ -3,6 +3,7 @@ package com.spinn3r.metrics.kairosdb;
 /**
  *
  */
+@SuppressWarnings("serial")
 public class InvalidTagException extends RuntimeException {
 
     public InvalidTagException(String message) {
