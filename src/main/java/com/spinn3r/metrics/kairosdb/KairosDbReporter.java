@@ -173,7 +173,7 @@ public class KairosDbReporter extends ScheduledReporter {
 		 *            a {@link KairosDb} client
 		 * @return a {@link KairosDbReporter}
 		 */
-		public KairosDbReporter build(KairosDb kairosDb) {
+		public KairosDbReporter build(KairosDb kairosDb) throws IOException {
 			kairosDb.setTags(tags);
 			return new KairosDbReporter(registry, kairosDb, clock, prefix, rateUnit, durationUnit, filter, garbageCollectAndDeriveCounters );
 		}
@@ -200,7 +200,8 @@ public class KairosDbReporter extends ScheduledReporter {
                              TimeUnit rateUnit,
 			                 TimeUnit durationUnit,
                              MetricFilter filter,
-                             boolean garbageCollectAndDeriveTimers ) {
+                             boolean garbageCollectAndDeriveTimers ) throws IOException {
+
 		super(registry, "kairosdb-reporter", filter, rateUnit, durationUnit);
         this.registry = registry;
 		this.client = kairosDb;
@@ -208,19 +209,23 @@ public class KairosDbReporter extends ScheduledReporter {
 		this.prefix = prefix;
         this.garbageCollectAndDeriveTimers = garbageCollectAndDeriveTimers;
         this.gcMetricIndex = new GCMetricIndex( registry, clock, garbageCollectAndDeriveTimers );
+
+		client.connect();
+
 	}
 
 	@Override
-	public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters, SortedMap<String, Histogram> histograms,
-			SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
+	public void report(SortedMap<String, Gauge> gauges,
+					   SortedMap<String, Counter> counters,
+					   SortedMap<String, Histogram> histograms,
+					   SortedMap<String, Meter> meters,
+					   SortedMap<String, Timer> timers) {
 
         final long timestamp = clock.getTime();
 
 		try {
 
             LOGGER.info( "Reporting metrics to " + client );
-
-			client.connect();
 
 			for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
 				reportGauge(entry.getKey(), entry.getValue(), timestamp);
@@ -246,13 +251,8 @@ public class KairosDbReporter extends ScheduledReporter {
 
         } catch (Throwable t) {
 			LOGGER.warn("Unable to report to server", client, t);
-		} finally {
-			try {
-				client.close();
-			} catch (IOException e) {
-				LOGGER.debug("Error disconnecting from server", client, e);
-			}
 		}
+
 	}
 
 
