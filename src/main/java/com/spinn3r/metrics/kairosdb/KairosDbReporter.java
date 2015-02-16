@@ -210,8 +210,6 @@ public class KairosDbReporter extends ScheduledReporter {
         this.garbageCollectAndDeriveTimers = garbageCollectAndDeriveTimers;
         this.gcMetricIndex = new GCMetricIndex( registry, clock, garbageCollectAndDeriveTimers );
 
-		client.connect();
-
 	}
 
 	@Override
@@ -225,7 +223,9 @@ public class KairosDbReporter extends ScheduledReporter {
 
 		try {
 
-            LOGGER.info( "Reporting metrics to " + client );
+			client.connect();
+
+			LOGGER.info( "Reporting metrics to " + client );
 
 			for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
 				reportGauge(entry.getKey(), entry.getValue(), timestamp);
@@ -251,8 +251,13 @@ public class KairosDbReporter extends ScheduledReporter {
 
         } catch (Throwable t) {
 			LOGGER.warn("Unable to report to server", client, t);
+		} finally {
+			try {
+				client.close();
+			} catch (IOException e) {
+				LOGGER.debug("Error disconnecting from server", client, e);
+			}
 		}
-
 	}
 
 
