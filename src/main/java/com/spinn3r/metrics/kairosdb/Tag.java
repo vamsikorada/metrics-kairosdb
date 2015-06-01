@@ -3,7 +3,7 @@ package com.spinn3r.metrics.kairosdb;
 /**
  * A tag with a name and value
  */
-public class Tag {
+public class Tag implements Comparable<Tag> {
 
     private final String name;
 
@@ -22,10 +22,15 @@ public class Tag {
         return value;
     }
 
+    @Override
     public String toString() {
         return name + "=" + value;
     }
 
+    @Override
+    public int compareTo(Tag o) {
+        return toString().compareTo( o.toString() );
+    }
 
     @Override
     public boolean equals(Object o) {
