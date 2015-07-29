@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static com.spinn3r.metrics.kairosdb.TaggedMetrics.tag;
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -114,7 +115,7 @@ public class KairosDbTest {
     @Test
     public void tags2() throws Exception {
 
-        Map<String,String> tags = new LinkedHashMap<>();
+        Map<String,String> tags = new TreeMap<>();
         tags.put( "cat", "dog" );
         tags.put( "foo", "bar" );
 
