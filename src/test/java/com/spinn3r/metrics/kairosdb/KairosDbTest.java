@@ -101,7 +101,7 @@ public class KairosDbTest {
     @Test
     public void tags1() throws Exception {
 
-        Map<String,String> tags = new HashMap<>();
+        Map<String,String> tags = new TreeMap<>();
         tags.put( "foo", "bar" );
 
         kairosDb.connect();
