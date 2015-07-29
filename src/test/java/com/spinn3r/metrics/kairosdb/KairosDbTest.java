@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.spinn3r.metrics.kairosdb.TaggedMetrics.tag;
@@ -113,9 +114,9 @@ public class KairosDbTest {
     @Test
     public void tags2() throws Exception {
 
-        Map<String,String> tags = new HashMap<>();
-        tags.put( "foo", "bar" );
+        Map<String,String> tags = new LinkedHashMap<>();
         tags.put( "cat", "dog" );
+        tags.put( "foo", "bar" );
 
         kairosDb.connect();
         kairosDb.send("name woo", "value", 100, tags);
