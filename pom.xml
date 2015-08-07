@@ -126,7 +126,25 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.2.2</version>
             </plugin>
+
+            <!-- turn on the jdeb plugin for all projects but skip it. This way
+             we can run jdeb:jdeb from our parent project so that all
+             packages in all submodules will be made -->
+
+            <plugin>
+
+                <artifactId>jdeb</artifactId>
+                <groupId>org.vafer</groupId>
+                <version>1.1.1</version>
+
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+
+            </plugin>
+
         </plugins>
+
     </build>
 
 </project>
