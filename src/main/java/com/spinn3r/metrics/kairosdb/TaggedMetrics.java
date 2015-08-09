@@ -50,27 +50,27 @@ public class TaggedMetrics {
     }
 
 
-    public String name( Class clazz, String name0, Tag... tags ) {
+    public String name( Class<?> clazz, String name0, Tag... tags ) {
         return createMetricWithTags( MetricRegistry.name( clazz, name0 ), join( tags ) );
     }
 
-    public String name( Class clazz, String name0, String name1, Tag... tags ) {
+    public String name( Class<?> clazz, String name0, String name1, Tag... tags ) {
         return createMetricWithTags( MetricRegistry.name( clazz, name0, name1 ), join( tags ) );
     }
 
-    public String name( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+    public String name( Class<?> clazz, String name0, String name1, String name2, Tag... tags ) {
         return createMetricWithTags( MetricRegistry.name( clazz, name0, name1, name2 ), join( tags ) );
     }
 
-    public Meter meter( Class clazz, String name0, Tag... tags ) {
+    public Meter meter( Class<?> clazz, String name0, Tag... tags ) {
         return meter( name( clazz, name0, tags ) );
     }
 
-    public Meter meter( Class clazz, String name0, String name1, Tag... tags ) {
+    public Meter meter( Class<?> clazz, String name0, String name1, Tag... tags ) {
         return meter( name( clazz, name0, name1, tags ) );
     }
 
-    public Meter meter( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+    public Meter meter( Class<?> clazz, String name0, String name1, String name2, Tag... tags ) {
         return meter( name( clazz, name0, name1, name2, tags ) );
     }
 
@@ -78,15 +78,15 @@ public class TaggedMetrics {
         return metricRegistry.meter( name );
     }
 
-    public Counter counter( Class clazz, String name0, Tag... tags ) {
+    public Counter counter( Class<?> clazz, String name0, Tag... tags ) {
         return counter( name( clazz, name0, tags ) );
     }
 
-    public Counter counter( Class clazz, String name0, String name1, Tag... tags ) {
+    public Counter counter( Class<?> clazz, String name0, String name1, Tag... tags ) {
         return counter( name( clazz, name0, name1, tags ) );
     }
 
-    public Counter counter( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+    public Counter counter( Class<?> clazz, String name0, String name1, String name2, Tag... tags ) {
         return counter( name( clazz, name0, name1, name2, tags ) );
     }
 
@@ -98,15 +98,15 @@ public class TaggedMetrics {
         return metricRegistry.counter( name );
     }
 
-    public Histogram histogram( Class clazz, String name0, Tag... tags ) {
+    public Histogram histogram( Class<?> clazz, String name0, Tag... tags ) {
         return histogram( name( clazz, name0, tags ) );
     }
 
-    public Histogram histogram( Class clazz, String name0, String name1, Tag... tags ) {
+    public Histogram histogram( Class<?> clazz, String name0, String name1, Tag... tags ) {
         return histogram( name( clazz, name0, name1, tags ) );
     }
 
-    public Histogram histogram( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+    public Histogram histogram( Class<?> clazz, String name0, String name1, String name2, Tag... tags ) {
         return histogram( name( clazz, name0, name1, name2, tags ) );
     }
 
@@ -114,15 +114,15 @@ public class TaggedMetrics {
         return metricRegistry.histogram( name );
     }
 
-    public Timer timer( Class clazz, String name0, Tag... tags ) {
+    public Timer timer( Class<?> clazz, String name0, Tag... tags ) {
         return timer( name( clazz, name0, tags ) );
     }
 
-    public Timer timer( Class clazz, String name0, String name1, Tag... tags ) {
+    public Timer timer( Class<?> clazz, String name0, String name1, Tag... tags ) {
         return timer( name( clazz, name0, name1, tags ) );
     }
 
-    public Timer timer( Class clazz, String name0, String name1, String name2, Tag... tags ) {
+    public Timer timer( Class<?> clazz, String name0, String name1, String name2, Tag... tags ) {
         return timer( name( clazz, name0, name1, name2, tags ) );
     }
 
@@ -134,19 +134,19 @@ public class TaggedMetrics {
         return new TimerRunner( this, runnable );
     }
 
-    public void register( Gauge gauge, Class clazz, String name0, Tag... tags ) {
+    public void register( Gauge<?> gauge, Class<?> clazz, String name0, Tag... tags ) {
         register( gauge, name( clazz, name0, tags ) );
     }
 
-    public void register( Gauge gauge, Class clazz, String name0, String name1, Tag... tags ) {
+    public void register( Gauge<?> gauge, Class<?> clazz, String name0, String name1, Tag... tags ) {
         register( gauge, name( clazz, name0, name1, tags ) );
     }
 
-    public void register( Gauge gauge, Class clazz, String name0, String name1, String name2, Tag... tags ) {
+    public void register( Gauge<?> gauge, Class<?> clazz, String name0, String name1, String name2, Tag... tags ) {
         register( gauge, name( clazz, name0, name1, name2, tags ) );
     }
 
-    public void register( Gauge gauge, String name ) {
+    public void register( Gauge<?> gauge, String name ) {
         metricRegistry.register(name, gauge );
     }
 
