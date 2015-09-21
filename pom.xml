@@ -8,6 +8,9 @@
     <description>KairosDB reporter plugin for the Metrics library</description>
     <url>https://github.com/burtonator/metrics-kairosdb</url>
 
+    <prerequisites>
+        <maven>2.2.1</maven>
+    </prerequisites>
 
     <licenses>
         <license>
