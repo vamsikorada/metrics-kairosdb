@@ -1,8 +1,9 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.spinn3r.metrics.kairosdb</groupId>
     <artifactId>metrics-kairosdb</artifactId>
-    <version>0.0.20</version>
+    <version>5.1.509</version>
     <packaging>jar</packaging>
     <name>KairosDB reporter plugin for the Metrics library</name>
     <description>KairosDB reporter plugin for the Metrics library</description>
