@@ -1,3 +1,20 @@
 machine:
   java:
     version: oraclejdk8
+
+dependencies:
+  override:
+    - cp settings.xml ~/.m2
+    - rm -rf ~/.m2/repository/com/spinn3r/artemis/
+    - time mvn -T 4 -P artifactory -Dproject.updatePolicy=always -DskipTests install
+    - time mvn -e -T 4 -P artifactory -Dproject.updatePolicy=always dependency:go-offline
+
+test:
+  override:
+    - mvn -P artifactory -Dproject.updatePolicy=always -T 4 test org.vafer:jdeb:jdeb
+
+deployment:
+  staging:
+    branch: master
+    commands:
+      - mvn -P artifactory -T 4 -DskipTests deploy
