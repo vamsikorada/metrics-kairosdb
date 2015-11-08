@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
+          xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+
+    <!-- this is a template used by circleci to get access to our repo
+         to perform package deploy.  NO PASSWORDS are stored here because
+         they are filled in with environment variables.  This file is copied
+         to ~/.m2 and then the variables are filled in via the environment.
+    -->
+
+    <servers>
+
+        <server>
+            <id>spinn3r</id>
+            <username>maven</username>
+            <password>${env.MAVEN_PASSWORD}</password>
+        </server>
+
+        <server>
+            <id>artifactory-releases</id>
+            <username>admin</username>
+            <password>${env.ARTIFACTORY_PASSWORD}</password>
+        </server>
+
+        <server>
+            <id>artifactory-snapshots</id>
+            <username>admin</username>
+            <password>env.ARTIFACTORY_PASSWORD</password>
+        </server>
+
+    </servers>
+
+</settings>
