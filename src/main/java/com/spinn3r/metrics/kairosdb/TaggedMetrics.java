@@ -254,8 +254,12 @@ public class TaggedMetrics {
 
             case IGNORE_AND_LOG:
                 LOGGER.warn( message );
+                break;
 
             case IGNORE:
+                break;
+
+            default:
                 break;
 
         }
@@ -271,8 +275,12 @@ public class TaggedMetrics {
 
             case IGNORE_AND_LOG:
                 LOGGER.warn( message );
+                break;
 
             case IGNORE:
+                break;
+
+            default:
                 break;
 
         }

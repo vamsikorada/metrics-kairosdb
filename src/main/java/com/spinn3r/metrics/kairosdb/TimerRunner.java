@@ -27,11 +27,13 @@ public class TimerRunner implements Runnable {
     }
 
     @Override
+    @SuppressWarnings( "unused" )
     public void run() {
 
         // TODO: this will log failure too... that's not what we want!
-        try(Timer.Context context = timer.time() ) {
+        try( Timer.Context context = timer.time() ) {
             delegate.run();
+            context.hashCode(); // workaround for lint errors.
         }
 
     }
