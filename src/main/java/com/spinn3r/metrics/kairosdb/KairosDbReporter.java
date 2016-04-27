@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -34,6 +35,8 @@ public class KairosDbReporter extends ScheduledReporter {
 
     protected GCMetricIndex gcMetricIndex = null;
 
+	private ReportWaiter reportWaiter = new ReportWaiter();
+
 	/**
 	 * Returns a new {@link Builder} for {@link KairosDbReporter}.
 	 * 
@@ -43,6 +46,10 @@ public class KairosDbReporter extends ScheduledReporter {
 	 */
 	public static Builder forRegistry(MetricRegistry registry) {
 		return new Builder(registry);
+	}
+
+	public ReportWaiter getReportWaiter() {
+		return reportWaiter;
 	}
 
 	/**
@@ -249,6 +256,13 @@ public class KairosDbReporter extends ScheduledReporter {
 			}
 
             gcMetricIndex.gc();
+
+			// count down so that anyone listening to the current latch
+			// will be notified that we have reported.
+			reportWaiter.countDownLatchReference.get().countDown();
+
+			// now give us a new latch for the next report...
+			reportWaiter.countDownLatchReference.set(new CountDownLatch(1));
 
         } catch (Throwable t) {
 			LOGGER.warn("Unable to report to server", client, t);
