@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.codahale.metrics.*;
+import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -270,42 +271,58 @@ public class KairosDbReporter extends ScheduledReporter {
 
 			LOGGER.info( String.format( "Reporting metrics to %s..." , client ) );
 
-			client.connect();
+			connect();
 
-			for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
-				reportGauge(entry.getKey(), entry.getValue(), timestamp);
-			}
+			withTiming( "Reporting gauges", () -> {
 
-			for (Map.Entry<String, Counter> entry : counters.entrySet()) {
-				reportCounter(entry.getKey(), entry.getValue(), timestamp);
-			}
+				for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
+					reportGauge(entry.getKey(), entry.getValue(), timestamp);
+				}
 
-			for (Map.Entry<String, Histogram> entry : histograms.entrySet()) {
-				reportHistogram(entry.getKey(), entry.getValue(), timestamp);
-			}
+			} );
 
-			for (Map.Entry<String, Meter> entry : meters.entrySet()) {
-				reportMetered(entry.getKey(), entry.getValue(), timestamp);
-			}
+			withTiming( "Reporting counters", () -> {
+				for (Map.Entry<String, Counter> entry : counters.entrySet()) {
+					reportCounter(entry.getKey(), entry.getValue(), timestamp);
+				}
 
-			for (Map.Entry<String, Timer> entry : timers.entrySet()) {
-				reportTimer(entry.getKey(), entry.getValue(), timestamp);
-			}
+			} );
 
-            gcMetricIndex.gc();
+			withTiming("Reporting histograms", () -> {
+				for (Map.Entry<String, Histogram> entry : histograms.entrySet()) {
+					reportHistogram(entry.getKey(), entry.getValue(), timestamp);
+				}
+			} );
 
-			// count down so that anyone listening to the current latch
-			// will be notified that we have reported.
-			reportWaiter.countDownLatchReference.get().countDown();
+			withTiming("Reporting meters", () -> {
+				for (Map.Entry<String, Meter> entry : meters.entrySet()) {
+					reportMetered(entry.getKey(), entry.getValue(), timestamp);
+				}
+			} );
 
-			// now give us a new latch for the next report...
-			reportWaiter.countDownLatchReference.set(new CountDownLatch(1));
+			withTiming("Reporting timers", () -> {
+				for (Map.Entry<String, Timer> entry : timers.entrySet()) {
+					reportTimer(entry.getKey(), entry.getValue(), timestamp);
+				}
+			} );
+
+			withTiming("Finalizing", () -> {
+				gcMetricIndex.gc();
+
+				// count down so that anyone listening to the current latch
+				// will be notified that we have reported.
+				reportWaiter.countDownLatchReference.get().countDown();
+
+				// now give us a new latch for the next report...
+				reportWaiter.countDownLatchReference.set(new CountDownLatch(1));
+			} );
 
         } catch (Throwable t) {
 			LOGGER.warn("Unable to report to server", client, t);
 		} finally {
+
 			try {
-				client.close();
+				disconnect();
 			} catch (IOException e) {
 				LOGGER.debug("Error disconnecting from server", client, e);
 			}
@@ -319,8 +336,31 @@ public class KairosDbReporter extends ScheduledReporter {
 
 	}
 
+	private void connect() throws IOException {
 
-    private void reportTimer(String name, Timer timer, long timestamp) throws IOException {
+		withTiming("Connecting to: " + client, client::connect);
+
+
+	}
+
+	private void disconnect() throws IOException {
+		withTiming("Disconnecting from: " + client, client::connect);
+	}
+
+	private void withTiming( String message, IORunnable runnable ) throws IOException {
+
+		Stopwatch stopwatch = Stopwatch.createStarted();
+
+		try {
+			LOGGER.info( String.format( "%s ... ", message ) );
+			runnable.run();
+		} finally {
+			LOGGER.info( String.format( "%s ... done (duration=%s)", message, stopwatch.stop() ) );
+		}
+
+	}
+
+	private void reportTimer(String name, Timer timer, long timestamp) throws IOException {
         TaggedMetric taggedMetric = parse( name );
         reportTimer( taggedMetric.getName(), timer, timestamp, taggedMetric.getTags() );
     }
