@@ -263,9 +263,7 @@ public class KairosDbReporter extends ScheduledReporter {
 
         final long timestamp = clock.getTime();
 
-		// technically we should use a stopwatch for this but I don't want to
-		// have to require guice or a 3rd party library yet.
-		long before = clock.getTime();
+		Stopwatch stopwatch = Stopwatch.createStarted();
 
 		try {
 
@@ -276,7 +274,9 @@ public class KairosDbReporter extends ScheduledReporter {
 			withTiming( "Reporting gauges", () -> {
 
 				for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
-					reportGauge(entry.getKey(), entry.getValue(), timestamp);
+					withTiming("Reporting on gauge: " + entry.getKey(), () -> {
+						reportGauge(entry.getKey(), entry.getValue(), timestamp);
+					} );
 				}
 
 			} );
@@ -327,10 +327,7 @@ public class KairosDbReporter extends ScheduledReporter {
 				LOGGER.debug("Error disconnecting from server", client, e);
 			}
 
-			long after = clock.getTime();
-			long duration = (after-before);
-
-			LOGGER.info( String.format( "Reporting metrics to %s...done (duration=%,d ms)" , client, duration ) );
+			LOGGER.info( String.format( "Reporting metrics to %s...done (duration=%s)" , client, stopwatch.stop() ) );
 
 		}
 
