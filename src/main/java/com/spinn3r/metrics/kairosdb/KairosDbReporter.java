@@ -344,7 +344,7 @@ public class KairosDbReporter extends ScheduledReporter {
 	}
 
 	private void disconnect() throws IOException {
-		withTiming("Disconnecting from: " + client, client::connect);
+		withTiming("Disconnecting from: " + client, client::close);
 	}
 
 	private void withTiming( String message, IORunnable runnable ) throws IOException {
