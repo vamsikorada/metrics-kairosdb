@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -37,6 +38,45 @@ public class KairosDbReporter extends ScheduledReporter {
 
 	private ReportWaiter reportWaiter = new ReportWaiter();
 
+	private KairosDbReporter(MetricRegistry registry,
+							 KairosDb kairosDb,
+							 Clock clock,
+							 String prefix,
+							 TimeUnit rateUnit,
+							 TimeUnit durationUnit,
+							 MetricFilter filter,
+							 boolean garbageCollectAndDeriveTimers) throws IOException {
+
+		super(registry, "kairosdb-reporter", filter, rateUnit, durationUnit);
+		this.registry = registry;
+		this.client = kairosDb;
+		this.clock = clock;
+		this.prefix = prefix;
+		this.garbageCollectAndDeriveTimers = garbageCollectAndDeriveTimers;
+		this.gcMetricIndex = new GCMetricIndex( registry, clock, garbageCollectAndDeriveTimers );
+
+	}
+
+	private KairosDbReporter(MetricRegistry registry,
+							 KairosDb kairosDb,
+							 Clock clock,
+							 String prefix,
+							 TimeUnit rateUnit,
+							 TimeUnit durationUnit,
+							 ScheduledExecutorService executor,
+							 MetricFilter filter,
+							 boolean garbageCollectAndDeriveTimers) throws IOException {
+
+		super(registry, "kairosdb-reporter", filter, rateUnit, durationUnit, executor);
+		this.registry = registry;
+		this.client = kairosDb;
+		this.clock = clock;
+		this.prefix = prefix;
+		this.garbageCollectAndDeriveTimers = garbageCollectAndDeriveTimers;
+		this.gcMetricIndex = new GCMetricIndex( registry, clock, garbageCollectAndDeriveTimers );
+
+	}
+
 	/**
 	 * Returns a new {@link Builder} for {@link KairosDbReporter}.
 	 * 
@@ -66,6 +106,7 @@ public class KairosDbReporter extends ScheduledReporter {
 		private MetricFilter filter;
 		private Map<String, String> tags;
         private boolean garbageCollectAndDeriveCounters = false;
+		private ScheduledExecutorService executor = null;
 
 		private Builder(MetricRegistry registry) {
 			this.registry = registry;
@@ -105,6 +146,11 @@ public class KairosDbReporter extends ScheduledReporter {
 		 */
 		public Builder withClock(Clock clock) {
 			this.clock = clock;
+			return this;
+		}
+
+		public Builder withScheduledExecutorService(ScheduledExecutorService executor) {
+			this.executor = executor;
 			return this;
 		}
 
@@ -182,7 +228,12 @@ public class KairosDbReporter extends ScheduledReporter {
 		 */
 		public KairosDbReporter build(KairosDb kairosDb) throws IOException {
 			kairosDb.setTags(tags);
-			return new KairosDbReporter(registry, kairosDb, clock, prefix, rateUnit, durationUnit, filter, garbageCollectAndDeriveCounters );
+			if ( executor != null ) {
+				return new KairosDbReporter(registry, kairosDb, clock, prefix, rateUnit, durationUnit, executor, filter, garbageCollectAndDeriveCounters);
+			} else {
+				return new KairosDbReporter(registry, kairosDb, clock, prefix, rateUnit, durationUnit, filter, garbageCollectAndDeriveCounters);
+			}
+
 		}
 
 		private void validateTag(String tagName, String tagValue) {
@@ -200,24 +251,6 @@ public class KairosDbReporter extends ScheduledReporter {
 		}
 	}
 
-	private KairosDbReporter(MetricRegistry registry,
-                             KairosDb kairosDb,
-                             Clock clock,
-                             String prefix,
-                             TimeUnit rateUnit,
-			                 TimeUnit durationUnit,
-                             MetricFilter filter,
-                             boolean garbageCollectAndDeriveTimers ) throws IOException {
-
-		super(registry, "kairosdb-reporter", filter, rateUnit, durationUnit);
-        this.registry = registry;
-		this.client = kairosDb;
-		this.clock = clock;
-		this.prefix = prefix;
-        this.garbageCollectAndDeriveTimers = garbageCollectAndDeriveTimers;
-        this.gcMetricIndex = new GCMetricIndex( registry, clock, garbageCollectAndDeriveTimers );
-
-	}
 
 	@Override
 	@SuppressWarnings( "rawtypes" )
