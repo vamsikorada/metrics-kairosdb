@@ -274,9 +274,7 @@ public class KairosDbReporter extends ScheduledReporter {
 			withTiming( "Reporting gauges", () -> {
 
 				for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
-					withTiming("Reporting on gauge: " + entry.getKey(), () -> {
-						reportGauge(entry.getKey(), entry.getValue(), timestamp);
-					} );
+					reportGauge(entry.getKey(), entry.getValue(), timestamp);
 				}
 
 			} );
