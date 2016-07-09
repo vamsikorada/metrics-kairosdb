@@ -27,8 +27,6 @@ public class TaggedMetrics {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( TaggedMetrics.class );
 
-    protected static final Map<String,String> NO_TAGS = new HashMap<>();
-
     private final MetricRegistry metricRegistry;
 
     private final InvalidTagPolicy invalidTagPolicy;
