@@ -274,6 +274,7 @@ public class KairosDbReporter extends ScheduledReporter {
 			withTiming( "Reporting gauges", () -> {
 
 				for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
+					LOGGER.debug("Reporting: " + entry.getKey());
 					reportGauge(entry.getKey(), entry.getValue(), timestamp);
 				}
 
@@ -281,6 +282,7 @@ public class KairosDbReporter extends ScheduledReporter {
 
 			withTiming( "Reporting counters", () -> {
 				for (Map.Entry<String, Counter> entry : counters.entrySet()) {
+					LOGGER.debug("Reporting: " + entry.getKey());
 					reportCounter(entry.getKey(), entry.getValue(), timestamp);
 				}
 
@@ -288,18 +290,21 @@ public class KairosDbReporter extends ScheduledReporter {
 
 			withTiming("Reporting histograms", () -> {
 				for (Map.Entry<String, Histogram> entry : histograms.entrySet()) {
+					LOGGER.debug("Reporting: " + entry.getKey());
 					reportHistogram(entry.getKey(), entry.getValue(), timestamp);
 				}
 			} );
 
 			withTiming("Reporting meters", () -> {
 				for (Map.Entry<String, Meter> entry : meters.entrySet()) {
+					LOGGER.debug("Reporting: " + entry.getKey());
 					reportMetered(entry.getKey(), entry.getValue(), timestamp);
 				}
 			} );
 
 			withTiming("Reporting timers", () -> {
 				for (Map.Entry<String, Timer> entry : timers.entrySet()) {
+					LOGGER.debug("Reporting: " + entry.getKey());
 					reportTimer(entry.getKey(), entry.getValue(), timestamp);
 				}
 			} );
